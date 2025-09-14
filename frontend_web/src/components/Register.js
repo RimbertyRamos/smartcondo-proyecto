@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Card, Alert, Container, Spinner } from 'react-bootstrap';
+import { Form, Button, Card, Alert, Container, Spinner, InputGroup } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify'; // Import toast
+import './Register.css'; // Import custom styles
 
 function Register({ onRegistrationSuccess }) {
   const [username, setUsername] = useState('');
@@ -10,8 +12,8 @@ function Register({ onRegistrationSuccess }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [unitId, setUnitId] = useState('');
   const [units, setUnits] = useState([]);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [error, setError] = useState(null); // Keep for form-specific error display
+  const [successMessage, setSuccessMessage] = useState(null); // Keep for form-specific success message
   const [loading, setLoading] = useState(false);
   const [unitsLoading, setUnitsLoading] = useState(true);
   const [unitsError, setUnitsError] = useState(null);
@@ -63,10 +65,12 @@ function Register({ onRegistrationSuccess }) {
       if (!response.ok) {
         const errorData = await response.json();
         const errorMessage = Object.values(errorData).flat().join(' ');
-        throw new Error(errorMessage || 'Registration failed');
+        toast.error(`Error al registrar: ${errorMessage}`); // Use toast for error
+        throw new Error(errorMessage); // Still throw to set local error state
       }
 
       setSuccessMessage('¡Cuenta creada exitosamente! Redirigiendo al inicio de sesión...');
+      toast.success('¡Cuenta creada exitosamente! Redirigiendo al inicio de sesión...'); // Use toast for success
       setUsername('');
       setPassword('');
       setEmail('');
@@ -87,92 +91,156 @@ function Register({ onRegistrationSuccess }) {
   };
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-      <div className="w-100" style={{ maxWidth: "600px" }}>
-        <Card>
-          <Card.Body>
-            <h2 className="text-center mb-4">Registrar Usuario</h2>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {successMessage && <Alert variant="success">{successMessage}</Alert>}
-            <Form onSubmit={handleSubmit}>
-              <Form.Group id="username" className="mb-3">
-                <Form.Label>Usuario:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group id="password" className="mb-3">
-                <Form.Label>Contraseña:</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group id="email" className="mb-3">
-                <Form.Label>Email:</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group id="fullName" className="mb-3">
-                <Form.Label>Nombre Completo:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group id="phoneNumber" className="mb-3">
-                <Form.Label>Número de Teléfono:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group id="unit" className="mb-3">
-                <Form.Label>Unidad Residencial:</Form.Label>
-                
-                {unitsLoading ? (
-                  <div className="text-center">
-                    <Spinner animation="border" size="sm" /> Cargando unidades...
-                  </div>
-                ) : unitsError ? (
-                  <Alert variant="danger">{unitsError}</Alert>
-                ) : (
-                  <Form.Select
-                    value={unitId}
-                    onChange={(e) => setUnitId(e.target.value)}
-                    required
-                  >
-                    <option value="">Selecciona una unidad</option>
-                    {units.map(unit => (
-                      <option key={unit.id} value={unit.id}>
-                        {unit.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                )}
-              </Form.Group>
-              <Button variant="primary" type="submit" className="w-100" disabled={loading || unitsLoading}>
-                {loading ? 'Registrando...' : 'Registrar'}
-              </Button>
-            </Form>
-            <div className="w-100 text-center mt-3">
-              ¿Ya tienes una cuenta? <Link to="/login">Inicia Sesión</Link>
+    <div className="register-page">
+      <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
+        <div className="w-100" style={{ maxWidth: "650px" }}>
+          <div className="text-center mb-4 fade-in-down">
+            <div className="brand-icon mb-3">
+              <i className="fas fa-building fa-3x text-primary"></i>
             </div>
-          </Card.Body>
-        </Card>
-      </div>
-    </Container>
+            <h1 className="h3 mb-3 font-weight-normal">Smart Condominium</h1>
+            <p className="text-muted">Crea una cuenta para acceder al sistema</p>
+          </div>
+          <Card className="shadow-sm fade-in-up">
+            <Card.Body className="p-4">
+              <h2 className="text-center mb-4">Registrar Usuario</h2>
+              {error && <Alert variant="danger" className="fade-in">{error}</Alert>}
+              {successMessage && <Alert variant="success" className="fade-in">{successMessage}</Alert>}
+              <Form onSubmit={handleSubmit}>
+                <Form.Group id="username" className="mb-3 fade-in-left">
+                  <Form.Label>Usuario:</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <i className="fas fa-user"></i>
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      placeholder="Ingresa tu nombre de usuario"
+                    />
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group id="password" className="mb-3 fade-in-left">
+                  <Form.Label>Contraseña:</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <i className="fas fa-lock"></i>
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      placeholder="Ingresa tu contraseña"
+                    />
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group id="email" className="mb-3 fade-in-right">
+                  <Form.Label>Email:</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <i className="fas fa-envelope"></i>
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Ingresa tu correo electrónico"
+                    />
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group id="fullName" className="mb-3 fade-in-right">
+                  <Form.Label>Nombre Completo:</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <i className="fas fa-user-circle"></i>
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      placeholder="Ingresa tu nombre completo"
+                    />
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group id="phoneNumber" className="mb-3 fade-in-left">
+                  <Form.Label>Número de Teléfono:</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <i className="fas fa-phone"></i>
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="text"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="Ingresa tu número de teléfono"
+                    />
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group id="unit" className="mb-3 fade-in-right">
+                  <Form.Label>Unidad Residencial:</Form.Label>
+                  
+                  {unitsLoading ? (
+                    <div className="text-center py-3 fade-in">
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      <span>Cargando unidades...</span>
+                    </div>
+                  ) : unitsError ? (
+                    <Alert variant="danger" className="fade-in">{unitsError}</Alert>
+                  ) : (
+                    <InputGroup>
+                      <InputGroup.Text>
+                        <i className="fas fa-home"></i>
+                      </InputGroup.Text>
+                      <Form.Select
+                        value={unitId}
+                        onChange={(e) => setUnitId(e.target.value)}
+                        required
+                      >
+                        <option value="">Selecciona una unidad</option>
+                        {units.map(unit => (
+                          <option key={unit.id} value={unit.id}>
+                            {unit.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </InputGroup>
+                  )}
+                </Form.Group>
+                <Button variant="primary" type="submit" className="w-100 mt-3 hover-lift" disabled={loading || unitsLoading}>
+                  {loading ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      <span className="ms-2">Registrando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-user-plus me-2"></i>
+                      Registrar
+                    </>
+                  )}
+                </Button>
+              </Form>
+              <div className="w-100 text-center mt-3 fade-in-up">
+                ¿Ya tienes una cuenta? <Link to="/login">Inicia Sesión</Link>
+              </div>
+            </Card.Body>
+          </Card>
+          <div className="text-center mt-3 text-muted fade-in-up">
+            <small>© 2023 Smart Condominium</small>
+          </div>
+        </div>
+      </Container>
+    </div>
   );
 }
 

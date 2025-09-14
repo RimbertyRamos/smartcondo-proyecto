@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './animations.css'; // Import animations
 import 'bootstrap/dist/css/bootstrap.min.css'; // Added Bootstrap CSS
 
 import App from './App';
