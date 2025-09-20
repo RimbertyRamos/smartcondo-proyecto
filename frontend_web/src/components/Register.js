@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Card, Alert, Container, Spinner, Row, Col } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Spinner, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './Register.css';
@@ -18,7 +18,7 @@ function Register() {
     const [unitId, setUnitId] = useState('');
     const [units, setUnits] = useState([]);
 
-    // --- Estados para la UI (carga, errores, etc.) ---
+    // --- Estados para la UI ---
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [unitsLoading, setUnitsLoading] = useState(true);
@@ -30,13 +30,14 @@ function Register() {
             setUnitsLoading(true);
             setUnitsError(null);
             try {
-                const response = await fetch(`${API_BASE_URL}/properties/`);
+                const response = await fetch(`${API_BASE_URL}properties/`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                setUnits(data.results || data);
+                setUnits(data);
             } catch (err) {
                 console.error("Error fetching units:", err);
                 setUnitsError("No se pudieron cargar las unidades residenciales.");
+                toast.error("No se pudieron cargar las unidades residenciales.");
             } finally {
                 setUnitsLoading(false);
             }
@@ -50,7 +51,7 @@ function Register() {
         setError(null);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/register/`, {
+            const response = await fetch(`${API_BASE_URL}register/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -61,16 +62,18 @@ function Register() {
                     sexo,
                     telefono: phoneNumber,
                     password,
-                    property_id: parseInt(unitId, 10),
+                    // 👇 LA CORRECCIÓN CLAVE ESTÁ AQUÍ 👇
+                    // El backend espera 'property', no 'property_id'.
+                    property: parseInt(unitId, 10),
                 }),
             });
 
             const responseData = await response.json();
 
             if (!response.ok) {
+                // Unimos todos los posibles errores que envíe el backend en un solo mensaje.
                 const errorMessage = Object.values(responseData).flat().join(' ');
-                toast.error(`Error al registrar: ${errorMessage}`);
-                throw new Error(errorMessage);
+                throw new Error(errorMessage || 'Ocurrió un error desconocido.');
             }
 
             toast.success('¡Cuenta creada exitosamente! Redirigiendo al inicio de sesión...');
@@ -78,6 +81,7 @@ function Register() {
 
         } catch (err) {
             setError(err.message);
+            toast.error(`Error al registrar: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -106,44 +110,53 @@ function Register() {
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Nombre</Form.Label>
-                                        <Form.Control type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required placeholder="Tu nombre" />
+                                        <Form.Control type="text" value={nombre}
+                                            onChange={(e) => setNombre(e.target.value)} required
+                                            placeholder="Tu nombre" />
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Apellido</Form.Label>
-                                        <Form.Control type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required placeholder="Tu apellido" />
+                                        <Form.Control type="text" value={apellido}
+                                            onChange={(e) => setApellido(e.target.value)} required
+                                            placeholder="Tu apellido" />
                                     </Form.Group>
                                 </Col>
                             </Row>
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Email (será tu usuario)</Form.Label>
-                                <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="ejemplo@correo.com" />
+                                <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                                    required placeholder="ejemplo@correo.com" />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Contraseña</Form.Label>
-                                <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Crea una contraseña segura" />
+                                <Form.Control type="password" value={password}
+                                    onChange={(e) => setPassword(e.target.value)} required
+                                    placeholder="Crea una contraseña segura" />
                             </Form.Group>
 
-                             <Row>
+                            <Row>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Código (CI/Pasaporte)</Form.Label>
-                                        <Form.Control type="text" value={cod} onChange={(e) => setCod(e.target.value)} required />
+                                        <Form.Control type="text" value={cod} onChange={(e) => setCod(e.target.value)}
+                                            required />
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Teléfono</Form.Label>
-                                        <Form.Control type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required />
+                                        <Form.Control type="text" value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)} required />
                                     </Form.Group>
                                 </Col>
                             </Row>
 
                             <Row>
-                               <Col md={6}>
+                                <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Sexo</Form.Label>
                                         <Form.Select value={sexo} onChange={(e) => setSexo(e.target.value)} required>
@@ -157,20 +170,27 @@ function Register() {
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Unidad Residencial</Form.Label>
-                                        {unitsLoading ? <div className="text-center"><Spinner animation="border" size="sm" /></div> : unitsError ? <Alert variant="danger" size="sm">{unitsError}</Alert> : (
-                                            <Form.Select value={unitId} onChange={(e) => setUnitId(e.target.value)} required>
-                                                <option value="">Selecciona tu unidad</option>
-                                                {units.map(unit => (
-                                                    <option key={unit.id} value={unit.id}>{unit.cod}</option>
-                                                ))}
-                                            </Form.Select>
-                                        )}
+                                        {unitsLoading ?
+                                            <div className="text-center"><Spinner animation="border" size="sm" />
+                                            </div> : unitsError ?
+                                                <Alert variant="danger" size="sm">{unitsError}</Alert> : (
+                                                    <Form.Select value={unitId}
+                                                        onChange={(e) => setUnitId(e.target.value)} required>
+                                                        <option value="">Selecciona tu unidad</option>
+                                                        {units.map((unit) => (
+                                                            <option key={unit.id} value={unit.id}>
+                                                                {unit.cod}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Select>
+                                                )}
                                     </Form.Group>
                                 </Col>
                             </Row>
 
                             <Button type="submit" className="w-100 register-btn" disabled={loading || unitsLoading}>
-                                {loading ? <><Spinner as="span" animation="border" size="sm" /> Registrando...</> : 'Crear Cuenta'}
+                                {loading ? <><Spinner as="span" animation="border"
+                                    size="sm" /> Registrando...</> : 'Crear Cuenta'}
                             </Button>
                         </Form>
                         <div className="w-100 text-center mt-3">
