@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Table, Button, Alert, Spinner } from 'react-bootstrap';
-
+import API_BASE_URL from '../apiConfig';
 function UserManagementSimple() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = 'http://127.0.0.1:8000/api/';
+ // const API_BASE_URL = 'http://127.0.0.1:8000/api/';
 
   useEffect(() => {
     fetchData();

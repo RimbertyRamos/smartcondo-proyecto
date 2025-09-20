@@ -3,6 +3,7 @@ import { Container, Card, Button, Alert, Spinner, Row, Col, Badge } from 'react-
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './UserProfile.css'; // Import custom styles
+import API_BASE_URL from '../apiConfig';
 
 function UserProfile() {
   const [user, setUser] = useState(null);
@@ -27,7 +28,7 @@ function UserProfile() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/users/me/', {
+      const response = await fetch(`${API_BASE_URL}/users/me/`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,

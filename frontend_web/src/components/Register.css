@@ -1,92 +1,106 @@
-/* Custom styles for Register component */
-
-.register-page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.register-page-elegant {
+  display: flex;
   min-height: 100vh;
+  width: 100%;
+  background-color: #f4f7f6;
+}
+
+.register-container {
   display: flex;
-  align-items: center;
-}
-
-.brand-icon {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.register-page h1 {
-  color: white;
-  font-weight: 300;
-}
-
-.register-page .text-muted {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.register-page .card {
-  border: none;
-  border-radius: 12px;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-.register-page .form-control,
-.register-page .form-select {
+.branding-col {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.branding-content h1 {
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.branding-content p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.form-col {
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.form-col h2 {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.form-control,
+.form-select {
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
 }
 
-.register-page .input-group-text {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-  border-right: none;
-  border-radius: 8px 0 0 8px !important;
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
-.register-page .form-control,
-.register-page .form-select {
-  border-left: none;
-  border-radius: 0 8px 8px 0 !important;
+.form-label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
 }
 
-.register-page .btn {
+.register-btn {
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-}
-
-.register-page .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
+  transition: all 0.3s ease;
 }
 
-.register-page a {
-  color: #667eea;
-  text-decoration: none;
+.register-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-link {
   font-weight: 500;
+  color: #667eea;
 }
 
-.register-page a:hover {
-  color: #764ba2;
-  text-decoration: underline;
-}
-
-@media (max-width: 576px) {
-  .register-page .card {
-    margin: 0 1rem;
+/* Responsive Design */
+@media (max-width: 992px) {
+  .register-container {
+    flex-direction: column;
   }
-  
-  .brand-icon {
-    width: 60px;
-    height: 60px;
+  .branding-col {
+    padding: 40px 20px;
   }
-  
-  .register-page h1 {
-    font-size: 1.5rem;
+  .form-col {
+    padding: 30px;
   }
 }
