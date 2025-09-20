@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
-
+import os
+import dj_database_url
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ylvfi19^jl40j7*g4utpaum8u$bx27v7xuam4nymog%x$q9szn'
+SECRET_KEY = os.environ.get('SECRET_KEY');
+#'django-insecure-ylvfi19^jl40j7*g4utpaum8u$bx27v7xuam4nymog%x$q9szn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -78,14 +82,13 @@ WSGI_APPLICATION = 'smartcondo.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'smartcondo_db',
-        'USER': 'smartcondominio',
-        'PASSWORD': 'smartcondominio852',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        # Render nos dará una variable de entorno llamada DATABASE_URL
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        # Render requiere conexión SSL, esto lo activa
+        ssl_require=True
+    )
 }
 
 
@@ -191,3 +194,6 @@ STATIC_URL = 'static/'
 
 # La carpeta donde 'collectstatic' reunirá todos los archivos estáticos para producción.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'build', 'static'),
+]
