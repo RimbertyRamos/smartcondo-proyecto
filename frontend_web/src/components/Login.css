@@ -1,96 +1,111 @@
-/* Custom styles for Login component */
-
-.login-page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.login-page-elegant {
+  display: flex;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-}
-
-.brand-icon {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  display: flex;
+  width: 100%;
+  background-color: #f4f7f6;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.login-page h1 {
-  color: white;
-  font-weight: 300;
+.login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-.login-page .text-muted {
-  color: rgba(255, 255, 255, 0.7) !important;
+.branding-col {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 
-.login-page .card {
-  border: none;
-  border-radius: 12px;
-  overflow: hidden;
+.branding-content h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-top: 20px;
+    margin-bottom: 15px;
 }
 
-.login-page .form-control {
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+.branding-content p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.login-page .input-group-text {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-  border-right: none;
-  border-radius: 8px 0 0 8px !important;
+.form-col {
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
 }
 
-.login-page .form-control {
-  border-left: none;
-  border-radius: 0 8px 8px 0 !important;
+.form-col h2 {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
 }
 
-.login-page .btn {
-  border-radius: 8px;
-  padding: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.form-control,
+.form-select {
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
 }
 
-.login-page .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
-.login-page .btn-outline-secondary {
-  border-radius: 0 8px 8px 0 !important;
-  border: 1px solid #ced4da !important;
-  border-left: none !important;
+.form-label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
 }
 
-.login-page a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
+.login-btn {
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
 }
 
-.login-page a:hover {
-  color: #764ba2;
-  text-decoration: underline;
+.login-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-@media (max-width: 576px) {
-  .login-page .card {
-    margin: 0 1rem;
-  }
-  
-  .brand-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .login-page h1 {
-    font-size: 1.5rem;
-  }
+.register-link {
+    font-weight: 500;
+    color: #667eea;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .login-container {
+        flex-direction: column;
+
+    }
+    align-items: center;
+    .branding-col {
+        padding: 40px 20px;
+    }
+
+    .form-col {
+        padding: 40px 30px;
+    }
 }

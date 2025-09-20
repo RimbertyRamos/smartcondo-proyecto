@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ylvfi19^jl40j7*g4utpaum8u$bx27v7xuam4nymog%x$q9szn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'smartcondo_db',
-        'USER': 'smartcondo_user',
-        'PASSWORD': 'smartcondo_password',
+        'USER': 'smartcondominio',
+        'PASSWORD': 'smartcondominio852',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -123,7 +123,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -133,6 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # React development server
     "http://127.0.0.1:3000", # React development server
+
 ]
 
 
@@ -186,3 +186,8 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+# La URL para acceder a los archivos estáticos en el navegador.
+STATIC_URL = 'static/'
+
+# La carpeta donde 'collectstatic' reunirá todos los archivos estáticos para producción.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

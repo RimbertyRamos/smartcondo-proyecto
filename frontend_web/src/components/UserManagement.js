@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Table, Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import API_BASE_URL from '../apiConfig';
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -13,7 +14,7 @@ function UserManagement() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState(null);
 
-  const API_BASE_URL = 'http://127.0.0.1:8000/api/';
+  //const API_BASE_URL = 'http://127.0.0.1:8000/api/';
 
   useEffect(() => {
     fetchData();

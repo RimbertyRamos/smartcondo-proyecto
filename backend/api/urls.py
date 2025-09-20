@@ -1,24 +1,28 @@
-from django.urls import path # Import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+# 👇 IMPORTACIÓN CORREGIDA 👇
 from .views import (
-    ResidentialUnitViewSet, ResidentViewSet, VisitorViewSet,
-    FeeTypeViewSet, FeeViewSet, PaymentViewSet, NoticeViewSet,
-    UserViewSet, VehicleViewSet, GroupViewSet, # Added GroupViewSet
-    UserRegistrationView
+    PropertyViewSet, # Renombrado desde ResidentialUnitViewSet
+    ResidentViewSet,
+    VisitorViewSet,
+    VehicleViewSet,
+    FeeViewSet,
+    PaymentViewSet,
+    register,
+    user_login
 )
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'residential-units', ResidentialUnitViewSet)
+# 👇 REGISTRO CORREGIDO 👇
+router.register(r'properties', PropertyViewSet) # Renombrado desde 'residential-units'
 router.register(r'residents', ResidentViewSet)
 router.register(r'visitors', VisitorViewSet)
-router.register(r'fee-types', FeeTypeViewSet)
+router.register(r'vehicles', VehicleViewSet)
 router.register(r'fees', FeeViewSet)
 router.register(r'payments', PaymentViewSet)
-router.register(r'notices', NoticeViewSet)
-router.register(r'vehicles', VehicleViewSet)
-router.register(r'groups', GroupViewSet) # Registered GroupViewSet
 
 urlpatterns = [
-    path('register/', UserRegistrationView.as_view(), name='register'), # New registration URL
-] + router.urls # Combine with router URLs
+    path('', include(router.urls)),
+    path('register/', register, name='register'),
+    path('login/', user_login, name='user_login'),
+]
