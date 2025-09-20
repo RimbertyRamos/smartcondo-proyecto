@@ -2,23 +2,15 @@
 # exit on error
 set -o errexit
 
+# --- PASOS NUEVOS Y CRÍTICOS ---
 echo "--- Construyendo el Frontend ---"
-# 1. Vamos a la carpeta del frontend
-cd ../frontend_web
-# 2. Instalamos sus dependencias
-npm install
-# 3. Creamos la carpeta 'build' con la versión final de React
-npm run build
-# 4. Volvemos a la carpeta del backend
-cd ../backend
+cd ../frontend_web  # 1. Ve a la carpeta de React
+npm install         # 2. Instala sus dependencias (React, Bootstrap, etc.)
+npm run build       # 3. Compila el frontend y crea la carpeta 'build'
+cd ../backend       # 4. Vuelve a la carpeta de Django
 
+# --- PASOS ANTIGUOS (SIGUEN SIENDO NECESARIOS) ---
 echo "--- Preparando el Backend ---"
-# 5. Instalamos las dependencias de Python
 pip install -r requirements.txt
-
-# 6. Recolectamos todos los archivos estáticos (incluyendo los de React)
 python manage.py collectstatic --no-input
-
-# 7. Aplicamos las migraciones a la base de datos de Render
 python manage.py migrate
-
