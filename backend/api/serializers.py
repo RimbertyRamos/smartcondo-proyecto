@@ -71,13 +71,31 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 # --- OTROS SERIALIZADORES ---
+class PropertyTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyType
+        fields = '__all__'
+
 class PropertySerializer(serializers.ModelSerializer):
-    property_type_name = serializers.CharField(source='property_type.tipoPropiedad', read_only=True)
+    # Definimos explícitamente el serializador para la relación
+    property_type = PropertyTypeSerializer(read_only=True)
+    # Creamos un campo de solo escritura para recibir el ID al crear/actualizar
+    property_type_id = serializers.PrimaryKeyRelatedField(
+        queryset=PropertyType.objects.all(), source='property_type', write_only=True
+    )
 
     class Meta:
         model = Property
-        fields = ['id', 'cod', 'm2', 'nroHabitaciones', 'descripcion', 'property_type', 'property_type_name']
-
+        # Lista explícita de campos para evitar problemas
+        fields = [
+            'id',
+            'cod',
+            'm2',
+            'nroHabitaciones',
+            'descripcion',
+            'property_type',
+            'property_type_id'
+        ]
 
 class ResidentSerializer(serializers.ModelSerializer):
     class Meta:
