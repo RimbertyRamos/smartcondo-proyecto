@@ -1,34 +1,82 @@
 from rest_framework import serializers
-# 👇 IMPORTACIÓN CORREGIDA 👇
-from .models import (
-    Property,
-    Resident,
-    Visitor,
-    Vehicle,
-    Fee,
-    Payment,
-    User,  # Añadimos el User para el serializer de registro/login
-    # Puedes añadir el resto de tus modelos aquí si vas a crear serializers para ellos
-)
-from rest_framework import serializers
-from django.contrib.auth.models import User as AuthUser
+from django.contrib.auth.models import User as AuthUser, Group
 from django.contrib.auth.password_validation import validate_password
+from .models import User, Property, Resident, UserType, PropertyType, Visitor, Vehicle, Fee, Payment
 
-from .models import User, Resident, Property, UserType
 
-# --- Serializers ---
-
+# --- SERIALIZADOR DE USUARIO (PARA MOSTRAR DATOS) ---
 class UserSerializer(serializers.ModelSerializer):
+    # Obtenemos los roles (grupos) del usuario de autenticación
+    groups = serializers.SerializerMethodField()
+    # Usamos el username del AuthUser que es el correo
+    username = serializers.CharField(source='auth_user.username', read_only=True)
+
     class Meta:
-        model = AuthUser
-        fields = ['id', 'username', 'email']
+        model = User
+        fields = ['id', 'cod', 'nombre', 'apellido', 'correo', 'sexo', 'telefono', 'groups', 'username']
+
+    def get_groups(self, obj):
+        # obj es la instancia de tu modelo User
+        # obj.auth_user es la instancia del AuthUser de Django
+        return [group.name for group in obj.auth_user.groups.all()]
 
 
-# 👇 SERIALIZER CORREGIDO: Usa 'Property' en lugar de 'ResidentialUnit' 👇
+# --- SERIALIZADOR DE REGISTRO ---
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    property = serializers.PrimaryKeyRelatedField(
+        queryset=Property.objects.all(), write_only=True
+    )
+
+    class Meta:
+        model = User
+        fields = ('cod', 'nombre', 'apellido', 'correo', 'sexo', 'telefono', 'password', 'property')
+
+    def create(self, validated_data):
+        propiedad = validated_data.pop('property')
+        password = validated_data.pop('password')
+
+        # Asignamos el correo también al username para la autenticación
+        auth_user = AuthUser.objects.create_user(
+            username=validated_data['correo'],
+            password=password,
+            email=validated_data['correo']
+        )
+
+        # Asignar al grupo "Residente" por defecto
+        try:
+            residente_group = Group.objects.get(name='Residente')
+            auth_user.groups.add(residente_group)
+        except Group.DoesNotExist:
+            # Opcional: Crear el grupo si no existe
+            pass
+
+        try:
+            user_type = UserType.objects.get(nombreTipo='Residente')
+        except UserType.DoesNotExist:
+            raise serializers.ValidationError("El tipo de usuario 'Residente' no existe.")
+
+        user = User.objects.create(
+            user_type=user_type,
+            auth_user=auth_user,
+            **validated_data
+        )
+
+        Resident.objects.create(
+            user=user,
+            unit=propiedad,
+            is_principal=True
+        )
+        return user
+
+
+# --- OTROS SERIALIZADORES ---
 class PropertySerializer(serializers.ModelSerializer):
+    property_type_name = serializers.CharField(source='property_type.tipoPropiedad', read_only=True)
+
     class Meta:
         model = Property
-        fields = '__all__'  # Incluye todos los campos del modelo Property
+        fields = ['id', 'cod', 'm2', 'nroHabitaciones', 'descripcion', 'property_type', 'property_type_name']
 
 
 class ResidentSerializer(serializers.ModelSerializer):
@@ -59,55 +107,3 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'
-
-
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    # Campos que esperamos recibir del frontend
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    property_id = serializers.IntegerField(write_only=True, required=True)
-
-    class Meta:
-        model = User
-        # Los campos de nuestro modelo User que se llenarán
-        fields = ('cod', 'nombre', 'apellido', 'correo', 'sexo', 'telefono', 'password', 'property_id')
-
-    def create(self, validated_data):
-        # 1. Crear el usuario de autenticación de Django (para login)
-        auth_user = AuthUser.objects.create_user(
-            username=validated_data['correo'],  # Usaremos el correo como username
-            password=validated_data['password'],
-            email=validated_data['correo']
-        )
-
-        # 2. Obtener el tipo de usuario "Residente" (debes crearlo en el admin)
-        try:
-            user_type = UserType.objects.get(nombreTipo='Residente')
-        except UserType.DoesNotExist:
-            raise serializers.ValidationError(
-                "El tipo de usuario 'Residente' no existe. Por favor, créalo en el panel de administrador.")
-
-        # 3. Crear nuestro usuario personalizado
-        user = User.objects.create(
-            cod=validated_data['cod'],
-            nombre=validated_data['nombre'],
-            apellido=validated_data['apellido'],
-            correo=validated_data['correo'],
-            sexo=validated_data['sexo'],
-            telefono=validated_data['telefono'],
-            user_type=user_type,
-            auth_user=auth_user
-        )
-
-        # 4. Crear el Residente y asociarlo a la propiedad
-        try:
-            propiedad = Property.objects.get(id=validated_data['property_id'])
-        except Property.DoesNotExist:
-            raise serializers.ValidationError("La propiedad seleccionada no existe.")
-
-        Resident.objects.create(
-            user=user,
-            unit=propiedad,
-            is_principal=True  # Asumimos que el primer registro es el principal
-        )
-
-        return user
