@@ -125,7 +125,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://smartcondo-proyecto-ookkturpp-pauls-projects-4715553c.vercel.app", # <-- ¡ESTA ES LA NUEVA URL CORRECTA!
+    "https://smartcondo-proyecto.vercel.app", # <-- ¡ESTA ES LA NUEVA URL CORRECTA!
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
